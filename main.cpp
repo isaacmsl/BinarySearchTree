@@ -33,6 +33,40 @@ void insert(Node * n, int key) {
     }
 }
 
+Node * minValueNode(Node * root) {
+    if (root == nullptr)
+        return nullptr;
+    else if (root->m_sub_l == nullptr)
+        return root;
+    else
+        return minValueNode(root->m_sub_l);
+}
+
+Node * remove(Node * n, int key) {
+    if (n == nullptr)
+        return n;
+    else if (n->m_key == key) {
+        bool no_childs = n->m_sub_l == n->m_sub_r; 
+        if (no_childs)
+            return nullptr;
+        else if (n->m_sub_r == nullptr)
+            return n->m_sub_l;
+        else if (n->m_sub_l == nullptr)
+            return n->m_sub_r;
+        else {
+            Node * min_of_sub_r = minValueNode(n->m_sub_r);
+            n->m_key = min_of_sub_r->m_key;
+            n->m_sub_r = remove(n->m_sub_r, n->m_key);
+        }
+    }
+    else if (n->m_key > key)
+        n->m_sub_l = remove(n->m_sub_l, key);
+    else
+        n->m_sub_r = remove(n->m_sub_r, key);
+
+    return n;
+}
+
 void printAll(Node * root) {
     if (root == nullptr) return;
 
@@ -43,11 +77,12 @@ void printAll(Node * root) {
 
 int main() {
     Node * root = new Node(8);
+    insert(root, 11);
+    insert(root, 10);
+    insert(root, 9);
     insert(root, 6);
-    insert(root, 5);
-    Node * found = search(root, 6);
-    Node * notFound = search(root, 7);
-    cout << "Found: " << found->m_key << '\n';
-    cout << "Not found: " << (notFound == nullptr) << '\n';
+    insert(root, 7);
+    remove(root, 8);
+    printAll(root);
     return 0;
 }
